@@ -1,0 +1,25 @@
+Задание 2.
+
+Хотелосмь бы попробавать описать booking.com 
+
+Задание 3.
+примерная реализация лайка
+CREATE TABLE likes (
+  like_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+  user_id (автор лайка) из таблицы users
+  message_id (на какое сообщение или пост лайк поставлен)
+  vote (категория лайка: либо булевая: лайк/дислайк, либо больше категорий, тогда создать отдельную таблицу для них)
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);  
+
+примерная реализация поста
+
+CREATE TABLE message (
+  message_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+  user_id (автор поста) из таблицы users
+  body текст поста
+  photo_id если фото использовано в посте
+  count_like счетчик лайков
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,  
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);  
