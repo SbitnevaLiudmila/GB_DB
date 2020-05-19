@@ -1,0 +1,3 @@
+mysqldump example > example.sql
+mysql -e 'create database sample'
+mysql sample < example.sql

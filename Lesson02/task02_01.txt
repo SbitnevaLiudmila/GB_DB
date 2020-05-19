@@ -1,0 +1,9 @@
+To hide password:
+-rw-------  1 liudmila liudmila    41 апр 29 18:40  .my.cnf
+
+Editing .my.cnf
+
+liudmila@liudmila-VirtualBox:~$ cat .my.cnf
+[client]
+user=root
+password=
