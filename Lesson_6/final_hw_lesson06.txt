@@ -1,0 +1,378 @@
+-- Агрегация данных
+-- Работаем с БД vk и тестовыми данными, которые вы сгенерировали ранее:
+-- 1. Создать все необходимые внешние ключи и диаграмму отношений.
+-- Сначала решила создать и заполнить таблицы лайков и постов.
+-- 2. Создать и заполнить таблицы лайков и постов.
+
+USE vk;
+SELECT DATABASE();
+SHOW TABLES;
+-- Таблица лайков
+DROP TABLE IF EXISTS likes;
+CREATE TABLE likes (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED NOT NULL,
+  target_id INT UNSIGNED NOT NULL,
+  target_type_id INT UNSIGNED NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Таблица типов лайков
+DROP TABLE IF EXISTS target_types;
+CREATE TABLE target_types (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL UNIQUE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO target_types (name) VALUES 
+  ('messages'),
+  ('users'),
+  ('media'),
+  ('posts');
+
+-- Заполняем лайки
+INSERT INTO likes 
+  SELECT 
+    id, 
+    FLOOR(1 + (RAND() * 100)), 
+    FLOOR(1 + (RAND() * 100)),
+    FLOOR(1 + (RAND() * 4)),
+    CURRENT_TIMESTAMP 
+  FROM messages;
+
+-- Проверим
+SELECT * FROM likes;
+SELECT * FROM target_types;
+
+-- Создадим таблицу постов
+DROP TABLE IF EXISTS posts;
+CREATE TABLE posts (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED NOT NULL,
+  community_id INT UNSIGNED,
+  head VARCHAR(255),
+  body TEXT NOT NULL,
+  media_id INT UNSIGNED,
+  is_public BOOLEAN DEFAULT TRUE,
+  is_archived BOOLEAN DEFAULT FALSE,
+  views_counter INT UNSIGNED DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+-- заполняю данными таблицу posts через filldb.com
+ 
+INSERT INTO `posts` VALUES ('1','27','12','Ut rerum aut iusto officiis unde repellendus.','Quia cupiditate ut nam molestias. Ipsum voluptas eum eum voluptatem tempore amet sint. Minus necessitatibus officia ea omnis itaque. Corrupti aut et impedit corrupti.','1','0','0','26','2011-09-24 22:17:14','2019-02-09 12:06:46'),
+('2','21','12','Repellendus velit magni tempore commodi labore reprehenderit.','Et atque eligendi quae eveniet et tempore et. Atque in ad quisquam qui tempora delectus aliquam. Sunt aut quia qui enim qui.','1','0','0','88','2019-12-09 21:00:38','2018-05-02 05:25:31'),
+('3','49','23','In doloremque tempora consequuntur et quaerat.','Praesentium fugiat at fugiat quas distinctio ex. Aut repudiandae quam velit voluptas quasi. Qui sunt et est voluptatibus. Velit soluta culpa consequuntur laborum praesentium.','2','0','0','64','2011-04-15 16:18:46','2015-09-04 09:46:15'),
+('4','91','22','Eos beatae qui incidunt maiores sit et.','Consequatur eum qui perferendis natus tenetur sit. Voluptatem praesentium nobis ut molestiae qui. Voluptatem dolores et et saepe vero animi quia. Quis nesciunt blanditiis nisi deserunt. Praesentium cupiditate doloremque aliquam eligendi culpa.','1','0','0','156','2013-04-09 00:03:35','2015-02-16 00:07:46'),
+('5','54','3','Voluptas sit esse qui et ratione.','Itaque quas iure provident. Sit qui cupiditate alias incidunt atque. Cumque aliquid sunt ipsam fugit ut omnis dignissimos. Omnis et quaerat aliquam ab modi odit.','1','0','0','153','2011-07-17 10:13:37','2010-12-01 03:57:10'),
+('6','25','16','Asperiores quam suscipit inventore minus vitae odit perspiciatis.','Optio deleniti laborum quasi rerum et dignissimos tenetur. Nisi dolor error harum iste. Esse voluptatem est consequuntur autem. Soluta quo vero aut ut animi quidem amet.','2','0','0','33','2015-04-01 00:54:51','2012-07-10 18:19:29'),
+('7','19','19','Et repellendus et unde labore quo ut.','Itaque qui qui praesentium mollitia. Neque eius numquam magnam assumenda. Enim in enim sunt molestias quos.','1','0','0','164','2017-02-12 07:23:02','2015-09-07 06:02:21'),
+('8','75','15','Illo labore autem velit vel sed sunt.','Voluptatum ab eos dolores tempore quo est. Corporis at impedit ducimus qui. Eum voluptas est non quo iure id odio ad.','3','0','0','120','2015-09-29 16:04:00','2010-12-31 05:47:31'),
+('9','74','3','Fuga voluptatum odio vel esse molestiae consequatur et.','Quaerat cumque harum sunt quia esse asperiores nihil. Itaque sed distinctio magni ut iure iure. Est incidunt sapiente expedita cumque error. Voluptatibus deserunt ullam odio laboriosam.','2','0','0','26','2014-08-11 21:17:06','2014-01-21 08:01:56'),
+('10','94','21','Fuga cupiditate quam voluptatem quae repudiandae accusamus.','Ut distinctio et at nihil omnis. Rem ut nemo quos fugit quae accusamus quis. Iusto earum praesentium id officiis provident. Dolores voluptates aut placeat neque.','3','0','0','138','2014-03-27 01:55:55','2018-09-27 07:16:05'),
+('11','81','8','Eos est autem hic illum ut perferendis rerum rerum.','Dolores placeat ex quo sed ipsam id. Ab ex maxime quis. Voluptate debitis aliquid doloremque expedita et esse placeat. Labore nam ut repellat nihil temporibus et.','2','0','0','120','2010-07-05 23:02:20','2015-10-19 12:11:13'),
+('12','64','3','Cum deleniti maxime qui est fugiat voluptatem.','Aperiam provident corrupti assumenda. Et et delectus rem dolorem quae. Dolores inventore reprehenderit quia nostrum qui reiciendis libero et. Beatae at harum modi dolor sint occaecati.','2','0','0','85','2013-02-08 05:11:34','2019-11-18 07:18:01'),
+('13','68','6','Ullam sed sit rerum accusamus beatae quia modi.','Quo voluptas architecto nulla quaerat in odio. Quae possimus temporibus eum deserunt repellendus veritatis. Alias ipsum dolores voluptas molestiae autem.','3','0','0','156','2012-08-23 12:36:09','2016-08-21 22:02:26'),
+('14','84','21','Nam cumque aspernatur adipisci ab qui veritatis dolore.','Ut veritatis in quia ab ut odit. Facere quia nam qui eum molestias adipisci eum aut. Quam id aut rerum et quod facere. Iusto incidunt et voluptatem.','2','0','0','147','2016-12-08 06:05:29','2016-03-23 16:24:36'),
+('15','59','17','Vero molestiae dolores deserunt quos qui voluptas nemo.','Sed ullam placeat asperiores. Excepturi tempore ut qui esse sequi. Repellat necessitatibus consequatur ratione in. Mollitia in nam eius blanditiis.','1','0','0','32','2018-05-25 03:48:46','2013-08-15 06:38:37'),
+('16','43','16','Odit quo neque quos aut dolorum earum.','Voluptatem consequatur optio laboriosam itaque et aliquid velit. Dolorum molestiae maxime aut at cumque. Architecto cum consequatur dolorum aliquam.','3','0','0','182','2012-05-12 13:05:48','2011-03-10 05:54:58'),
+('17','88','18','Aspernatur nobis voluptatem odit et illo.','Occaecati neque voluptatem cum sint minus est. Vero sed temporibus ex nesciunt nulla expedita sequi sed. Tenetur suscipit commodi dignissimos inventore illo sit deserunt.','3','0','0','9','2018-01-26 19:40:26','2015-04-07 11:32:00'),
+('18','59','10','Adipisci beatae animi at ipsum eum et enim.','Esse reprehenderit reiciendis quis aut. Nihil iusto facere tenetur est.','3','0','0','155','2013-03-31 15:08:14','2018-12-24 08:02:51'),
+('19','59','2','Dicta repudiandae porro praesentium deleniti corporis veritatis laboriosam voluptatem.','Dolores in repudiandae eaque consequuntur. Sequi officiis necessitatibus excepturi qui nisi voluptatibus dignissimos repellat. Nemo perspiciatis esse libero in. Possimus optio aut voluptas officia nulla.','1','0','0','88','2015-07-04 05:15:46','2011-04-23 07:46:53'),
+('20','26','24','Ex explicabo rerum modi omnis ea.','Voluptatibus natus et accusantium doloribus laborum fugit id. Temporibus exercitationem harum ut illo nisi ut quisquam. Aut ipsa dolore et eaque eligendi ex error.','3','0','0','76','2011-09-23 23:00:14','2016-02-15 17:18:52'),
+('21','94','16','Id quo recusandae quae dicta et.','Et id facilis ratione ducimus nihil ab ducimus. Odio iste optio et expedita nulla. Nulla et tempora voluptatibus maxime eum iste. Iure et qui cum ea nam aut sunt.','3','0','0','157','2014-02-06 07:17:48','2012-08-17 15:49:13'),
+('22','40','10','Eum voluptatum libero voluptatem non dolores doloremque consequatur.','Non autem asperiores provident repellat sed. Omnis iste amet eveniet quisquam. Vitae assumenda mollitia eligendi et tenetur.','3','0','0','30','2011-05-30 17:13:45','2017-10-08 18:27:39'),
+('23','9','3','Animi et asperiores ut animi in similique ut.','Dolorem alias aperiam nostrum accusantium. Asperiores dolores molestias dolorum similique deserunt. Asperiores sit nihil doloremque asperiores quia. Voluptatem fugit nulla dignissimos culpa autem.','1','0','0','170','2013-11-09 11:42:51','2012-11-25 08:37:41'),
+('24','10','25','Distinctio atque sapiente rerum id quia aliquid.','Libero sed autem molestias rerum. Molestiae veniam quia sint facilis enim.','1','0','0','137','2014-03-04 11:30:33','2015-02-05 20:21:05'),
+('25','58','10','Quia unde repellat et ullam.','Animi molestias dolor distinctio iusto. Molestias minima provident quibusdam veniam et at. Magnam perspiciatis soluta et sint.','3','0','0','18','2019-11-22 13:36:42','2018-10-20 04:56:59'),
+('26','13','10','Corporis sed ipsam modi recusandae.','Molestias expedita mollitia accusamus cumque architecto quis accusantium. Harum quis beatae pariatur tenetur. Corporis illum similique dolorum facilis praesentium hic et aliquid. Recusandae ad qui sed quis. Dolor eaque corporis consequatur beatae aut.','2','0','0','75','2015-02-18 19:13:27','2019-02-08 19:04:51'),
+('27','4','21','Est ullam exercitationem ex quia corporis.','Velit nesciunt sint sint qui. Ea voluptatem fugiat omnis eius. Quo quas voluptas sit beatae. Enim incidunt expedita ipsam.','2','0','0','166','2013-02-20 13:59:14','2019-11-13 15:50:36'),
+('28','39','6','Temporibus ipsum aperiam natus quisquam omnis.','Et ut eaque explicabo consectetur. Amet et non dolorem soluta nostrum rerum quia quas. Sit illo est quia impedit ut iure necessitatibus odit.','3','0','0','185','2015-06-04 19:02:32','2010-09-10 02:15:48'),
+('29','90','11','Corrupti neque eligendi esse aut atque cupiditate corporis.','Eius ducimus consequatur optio placeat voluptas fuga provident. Molestiae corporis amet facere corrupti. Expedita ut sed et a ullam ducimus. Quia nesciunt iure dolores similique excepturi.','1','0','0','169','2019-11-04 04:00:09','2017-06-14 22:45:16'),
+('30','78','11','Praesentium animi pariatur voluptas consectetur nostrum velit quia.','Optio illo voluptatem sit officiis quisquam corporis. Aut est et ratione et libero qui corporis. Quia ut vel tempore error.','3','0','0','79','2017-11-29 20:44:41','2011-11-05 00:34:05'),
+('31','83','25','Ut a ut vitae et quae possimus itaque quos.','Ratione repellendus est nihil tempora quisquam accusamus. Saepe veniam inventore et et.','2','0','0','20','2010-07-28 08:33:25','2013-06-25 20:57:39'),
+('32','28','22','Deleniti qui neque molestiae molestiae et qui.','Et rerum dolorem doloribus corporis sint quos ut harum. Cumque qui vel harum quidem cupiditate nihil alias accusamus. Dolor deleniti hic blanditiis consequatur aut velit. Velit velit explicabo ipsum et.','2','0','0','66','2015-09-27 01:39:33','2010-07-26 03:46:57'),
+('33','11','22','Amet aut distinctio eligendi necessitatibus ut.','Illum perspiciatis est ea. Ut sit et nemo ut cum quod qui. Excepturi qui recusandae sint aut voluptatem. Suscipit molestias delectus et nihil voluptas.','3','0','0','109','2019-04-02 23:14:18','2012-10-17 21:12:42'),
+('34','3','1','Sint qui quidem consequatur vel.','Ipsum eveniet est aperiam assumenda optio et explicabo. Consequuntur veniam ut aut autem ea ipsum.','1','0','0','139','2017-04-17 14:49:16','2015-04-19 09:41:40'),
+('35','16','15','Vel qui numquam dolorem minus consequuntur qui.','Ut dicta eum vero blanditiis cum. Pariatur nobis qui et quisquam dignissimos qui. Totam neque voluptas dolores eos voluptas harum.','3','0','0','137','2013-11-18 18:40:26','2016-09-12 07:15:11'),
+('36','28','1','Aliquam eos accusantium vitae et autem quia facilis.','Nihil est autem dicta qui iste doloribus. Nihil quia non facere expedita iusto.','2','0','0','73','2018-03-10 23:55:17','2014-02-27 13:43:43'),
+('37','60','20','Repudiandae quasi amet voluptatem voluptatem nam.','Sit sed magnam quia reiciendis ea nihil asperiores. Quod sit omnis quia quae accusantium dignissimos. Neque pariatur saepe amet aut ab voluptatibus.','2','0','0','125','2012-02-04 00:34:32','2013-10-24 18:43:09'),
+('38','96','9','Quibusdam sit aut culpa nihil modi.','Quia impedit vitae eligendi itaque. Omnis dolore iusto explicabo. Ullam a modi non totam error maxime.','1','0','0','103','2015-01-22 14:19:44','2018-12-29 21:36:10'),
+('39','69','20','Dicta ut aspernatur tenetur architecto accusamus harum itaque.','Laborum ut est aut minus quod. Similique est rerum et tempore. Unde eaque aut porro. Itaque excepturi illo odio iure occaecati. Veniam quos ad repellat ullam.','3','0','0','168','2016-05-23 07:34:54','2015-09-25 15:02:17'),
+('40','81','3','Recusandae odio illo quod voluptates hic sed.','Et voluptas nam sed id atque. Minus esse harum aut ipsam et eius aut. Ex perferendis alias dolores quia ut iusto.','3','0','0','197','2019-04-29 06:25:22','2020-03-17 14:53:04'),
+('41','37','11','Debitis ducimus error voluptatem.','Rerum adipisci similique consectetur sed et quia. Tempora officiis modi et amet culpa eligendi facere. Autem ut quaerat et laboriosam nostrum. Necessitatibus omnis consequatur laboriosam porro.','2','0','0','149','2012-10-20 21:27:39','2010-11-10 14:14:35'),
+('42','5','8','Consequatur nostrum velit autem ut qui vel.','Aut velit sit nostrum nisi. Ut animi animi cupiditate unde velit repudiandae perspiciatis. Quia quasi suscipit ut ab quibusdam enim id.','3','0','0','138','2013-03-24 20:01:33','2014-07-31 17:20:59'),
+('43','29','11','Aut veritatis beatae accusantium.','Sed quo amet ut laudantium. Temporibus voluptates sit dicta. Sint quia laborum tenetur totam. Non nam eius tenetur iure sint eius vel. Eum quibusdam adipisci quia nesciunt.','1','0','0','26','2019-06-08 14:20:17','2018-04-29 02:27:04'),
+('44','54','24','Provident quisquam ipsa architecto ut tempora doloremque rem.','Vero debitis quaerat molestiae explicabo repellat corporis. Eveniet recusandae est nulla. Impedit non aut dolorum nemo incidunt voluptatem dolores.','1','0','0','8','2016-05-26 13:07:40','2011-01-25 19:09:41'),
+('45','41','2','Labore similique quibusdam soluta dolorem voluptas.','Dolorem natus fuga eius quod. Non est corrupti explicabo repellendus minima exercitationem. Ipsum quo repudiandae sed adipisci sapiente.','1','0','0','180','2015-10-17 06:13:58','2013-05-28 16:27:53'),
+('46','73','4','Id dolorum voluptate sequi hic repudiandae beatae.','Blanditiis modi et dignissimos quos. Voluptas ut optio omnis soluta aut dolores. Nam veniam vitae consequuntur aspernatur dolorum.','1','0','0','10','2017-07-20 14:51:17','2012-05-09 19:40:21'),
+('47','37','5','Et minima ea voluptatem.','Deleniti reprehenderit voluptatum nihil adipisci. Impedit cupiditate voluptatem optio magni dolor quos voluptas. Et ratione nam itaque maiores officia.','2','0','0','22','2014-01-14 21:44:11','2018-10-20 17:23:34'),
+('48','43','14','Sequi quisquam et voluptatem corrupti.','Voluptatum commodi natus perferendis neque illum ut. Est qui omnis incidunt harum deleniti. Dolorem rerum et molestias voluptatem veniam.','3','0','0','68','2015-07-29 23:40:26','2016-04-21 00:44:42'),
+('49','45','8','Praesentium consequatur qui sunt et non ut.','Odio minima perferendis et cumque autem tenetur. Ea velit velit sit repudiandae eius dignissimos. Sapiente dolores eveniet dignissimos aut accusamus. Qui non similique ea ullam.','3','0','1','108','2011-08-03 12:22:30','2017-07-17 17:47:37'),
+('50','49','18','Rerum blanditiis voluptas voluptas quis molestiae.','Eius cum non et quasi. Necessitatibus molestias et ab non. Omnis totam deleniti maiores eum eius veritatis laborum.','1','0','0','163','2012-01-31 03:16:23','2017-04-12 00:47:45'),
+('51','15','13','Quae debitis esse non.','Et eum animi harum sunt quaerat laborum sint. Possimus fuga voluptatibus sit ea et hic. Voluptatem nihil aut laboriosam est.','2','0','0','189','2016-04-15 13:57:20','2011-06-02 13:59:26'),
+('52','40','15','Ea ratione velit ut veniam non ratione sit iure.','Veritatis laboriosam veritatis veniam est eveniet atque rem beatae. Eos voluptatibus ut non tenetur repudiandae qui incidunt non. Optio quia quo consequatur quos optio. Quos odio officiis sapiente est quos explicabo ipsa. In voluptates rerum dolorum et autem velit reprehenderit.','1','0','0','74','2017-11-03 11:51:55','2011-07-29 10:24:43'),
+('53','7','13','Eos mollitia porro numquam laboriosam est.','Architecto excepturi vero voluptatum et. Facere quisquam magnam qui quae quaerat ut. Quasi sint et harum natus. Aut et et quia libero in. Corporis voluptas assumenda quo qui natus ducimus.','1','0','0','183','2012-02-27 10:38:27','2015-06-04 21:40:03'),
+('54','31','19','Aut perspiciatis officia eos ut rem ut.','Dolorem dignissimos et inventore temporibus. Qui enim et occaecati quasi blanditiis quae dignissimos labore. Voluptatem et voluptatum voluptatem.','2','0','0','3','2019-03-05 01:55:37','2018-02-13 09:45:26'),
+('55','82','19','At nihil dolores odit neque molestiae debitis facilis.','Repellat dolores dignissimos sed deserunt. Voluptas et aut voluptas aliquam. Provident voluptatem distinctio delectus qui odit cupiditate. Id atque earum sit voluptas tempora et et sed. Vel quidem et labore aut quia ab aspernatur.','3','0','1','161','2018-07-19 13:50:33','2019-12-11 09:49:56'),
+('56','22','14','Necessitatibus magnam ut culpa ea.','Nobis voluptatem ut debitis tempore ut blanditiis. Eius non repellendus sit cupiditate quae corporis doloribus. Nisi modi possimus quae omnis non. Commodi occaecati accusamus laboriosam corrupti aspernatur officia minima.','2','0','0','35','2018-01-20 04:37:53','2017-05-31 19:21:23'),
+('57','49','7','Dolor non quod corrupti quam quibusdam.','Iusto facilis inventore quo. Occaecati quo illo est ut est sit dolores. Sint nobis assumenda minus molestiae quisquam illo sit. Sequi aut dicta et qui debitis quae voluptatem.','2','0','0','84','2018-08-30 02:49:21','2017-01-20 23:59:50'),
+('58','68','25','Modi sit eligendi facilis fuga eum quia officiis.','Quia culpa dolorem molestiae excepturi quam. Quidem voluptate delectus repellat eius quo possimus. Sunt eaque sequi blanditiis vero.','3','0','0','148','2019-01-07 20:03:53','2014-02-02 14:53:14'),
+('59','52','20','Tempora eligendi placeat odit facere.','Esse odio assumenda quia voluptatibus. Vero beatae optio est quasi dolores magni et.','1','0','0','107','2017-08-21 13:44:05','2017-11-14 01:02:33'),
+('60','69','6','Repellat incidunt modi amet consequatur laudantium dolores.','Et dolorem voluptatem saepe ipsum fuga sed qui. Soluta ratione dolor sit vel nihil officia consequatur. Ipsa sapiente et tempora in amet sunt quia in. Vitae sint molestiae quaerat dolor debitis amet molestias.','2','0','0','125','2018-08-22 10:06:23','2018-01-29 23:51:52'),
+('61','65','10','Reprehenderit quis rerum sequi quia.','Nostrum qui non non ad. Inventore dicta repellendus explicabo animi occaecati. Illum et sunt quis sapiente et illo.','1','0','0','158','2017-11-02 22:18:59','2017-02-17 14:33:07'),
+('62','36','9','Nihil quia minus voluptate expedita aut nisi aperiam.','Eius vel fugiat quae maxime tempore dolorem. Dolores veritatis omnis fugiat et excepturi dolores. Magnam quaerat non fuga quia natus vero voluptatem consequatur.','2','0','0','89','2020-01-21 10:44:40','2010-10-31 03:23:53'),
+('63','33','8','Sint rerum ut perspiciatis sed aut eius fugiat.','Minus accusamus qui eveniet. Numquam officia fugiat culpa tempora nisi. Animi quidem in non tempore consequatur non. Illo facere ut id aspernatur. Tenetur similique alias hic ut consequatur magnam.','1','0','0','199','2013-06-21 11:54:17','2019-08-23 17:19:08'),
+('64','70','25','Dolores iste quam velit sunt.','Architecto aut sit quae voluptatem. Animi mollitia ipsa tempore placeat.','1','0','0','28','2016-09-05 22:34:00','2019-07-30 14:43:40'),
+('65','35','22','Aut officia minima ducimus sed.','Debitis inventore iusto et odit. Exercitationem doloribus aut qui modi. Ab distinctio exercitationem laudantium nobis explicabo. Qui fuga quas ducimus culpa quos.','3','0','0','191','2019-01-03 07:03:50','2013-11-15 08:20:30'),
+('66','1','5','Aut cum omnis eius et qui voluptate rerum.','Voluptas hic quidem cumque. Neque sit qui nostrum animi. At quia quod sit id beatae minima. Quos asperiores rerum corporis assumenda aspernatur.','3','0','0','39','2014-06-04 10:41:59','2017-11-27 11:56:54'),
+('67','58','12','Fugiat dolores incidunt officiis ut nemo dolores illum.','Omnis mollitia nihil est et incidunt sint autem. Explicabo et nostrum sed consequuntur. Ipsa beatae laboriosam exercitationem deleniti.','3','0','0','5','2018-01-12 14:48:55','2013-08-23 11:41:00'),
+('68','22','6','Ex aut itaque earum itaque sed sed.','Fugit eum a vel nemo amet eligendi asperiores aliquid. Fugit nihil reiciendis corporis ut quam. Blanditiis placeat earum repellat. Nostrum sunt tempore voluptas quisquam.','2','0','0','98','2012-03-08 20:00:57','2019-03-22 07:50:54'),
+('69','48','13','Sunt vitae neque voluptas nostrum.','Eos nobis neque autem deserunt consectetur qui at. Voluptatum et ipsa qui et illum omnis. Sequi ex quam consequatur tempore voluptate. Magnam velit voluptatum non amet.','2','0','0','167','2017-12-19 08:26:58','2013-10-31 14:58:15'),
+('70','68','18','Perspiciatis voluptate corporis provident et et distinctio.','Ut velit tenetur autem libero sint velit. Alias sapiente fuga aut dolore ut ipsam incidunt. Voluptatum perferendis commodi aliquam quia porro. Aut nihil ut occaecati dolores dolore repellat.','3','0','0','111','2012-10-25 21:40:09','2014-04-10 06:33:40'),
+('71','4','6','Omnis dolor error id.','Deserunt vel molestiae animi quae fugit. Veritatis rerum qui vitae velit rerum sunt aliquid. Exercitationem dolores cum quos libero repudiandae aut.','2','0','0','9','2020-04-23 22:07:07','2018-07-14 09:50:23'),
+('72','98','22','Quis est suscipit est mollitia et odit.','Delectus voluptatem quibusdam eius corrupti nam dolores ex fuga. Ratione blanditiis rerum sit dolorem voluptas consequatur autem. Sint autem voluptatem ab est. Reiciendis ut earum aut rem eaque sit.','3','0','0','78','2018-09-03 10:18:11','2017-11-01 06:29:37'),
+('73','54','4','Porro blanditiis voluptas explicabo ipsa autem.','Quod ut expedita temporibus perferendis doloribus minima. Veritatis excepturi quia explicabo ea culpa assumenda blanditiis corrupti. Voluptatem ut nisi nisi eius. Et provident ullam aut repellat consectetur.','2','0','0','158','2012-07-29 18:34:27','2011-10-24 13:42:57'),
+('74','7','24','Recusandae nulla ad consectetur non.','Fuga nesciunt magni quis in commodi. Sint alias quia quisquam beatae qui perferendis. Reiciendis dignissimos sed maiores.','3','0','0','2','2014-09-07 04:35:07','2010-12-09 07:39:22'),
+('75','51','22','Amet expedita voluptatum magni cupiditate fuga aut.','Quo molestias in voluptas adipisci quas. Aut autem a quibusdam ut. Iusto velit eum non sint reprehenderit.','3','0','0','48','2018-12-02 00:27:23','2018-10-31 20:29:20'),
+('76','98','8','Qui quia corporis autem incidunt.','Rem a ad quibusdam. Facilis ea aperiam harum incidunt reiciendis modi autem. Cumque molestiae dolorum nesciunt hic provident saepe molestiae. Nulla mollitia odio eos illo nesciunt nam.','3','0','0','39','2013-03-23 09:40:39','2016-07-20 14:08:12'),
+('77','70','14','Ex cumque quaerat ut officiis repellat.','Illo et aliquam recusandae sed. Eveniet voluptatem molestiae ea et magnam corporis. Rem cum non rerum velit facilis nihil. Quis nihil laborum non amet in.','1','0','0','137','2016-10-11 09:27:00','2015-02-27 05:24:14'),
+('78','26','17','Molestias aut illo explicabo accusamus.','Illo adipisci incidunt aliquam. Labore rem doloribus hic totam. Aspernatur aut rerum iure eos omnis quos harum. Qui sapiente qui enim neque eveniet voluptas laborum nesciunt.','1','0','0','126','2017-03-19 01:44:07','2020-04-28 23:09:26'),
+('79','90','17','Repellat qui vel sint suscipit voluptatem enim.','Ipsam corporis error exercitationem ea non iusto. Debitis temporibus est quis omnis molestias nulla. Dignissimos cum dignissimos sit a expedita et.','3','0','0','26','2012-10-22 02:33:37','2017-05-02 21:05:39'),
+('80','72','13','Sequi magnam illum est commodi.','Quam ipsa porro autem sunt aut laboriosam dolorem. Itaque sint nihil voluptatem. Et hic eum sunt eligendi enim autem.','1','0','0','183','2011-06-26 02:57:46','2018-06-10 14:11:43'),
+('81','2','7','Illum soluta quia vitae dicta.','Vitae mollitia enim sint sit aspernatur. Eaque beatae consequuntur odit rerum officia. Tenetur expedita veniam corporis odit ipsam voluptatem.','2','0','0','120','2020-02-20 21:12:46','2017-06-21 08:55:47'),
+('82','94','3','Neque ut quaerat quia accusantium.','Veritatis voluptatem ut aut corrupti earum. Libero labore ipsam placeat ullam explicabo eum. Ut voluptatem debitis recusandae eum. Laboriosam non excepturi voluptatem voluptatem deserunt doloremque saepe.','3','0','0','81','2014-09-26 07:18:29','2015-07-03 14:29:23'),
+('83','91','3','Ut aliquam vel unde ipsam.','Facere omnis maiores quae in. Quibusdam et sed ipsam voluptatem quae. Fuga voluptatibus consequuntur molestias dignissimos doloremque temporibus sed.','2','0','0','179','2019-02-08 07:31:08','2012-07-31 03:19:54'),
+('84','53','15','Architecto ut odit quas qui unde.','Omnis ut architecto est voluptatibus. Sint et et dolorem voluptatum minus. Qui quia excepturi excepturi occaecati.','2','0','0','52','2018-12-26 16:59:24','2010-10-21 02:38:13'),
+('85','48','18','Quasi cupiditate qui error suscipit dicta maiores non.','Et quam facere inventore quia blanditiis. Dignissimos id consectetur enim. Sed aliquam assumenda voluptatum dolore omnis quis suscipit. Est tenetur facere sit iusto.','1','0','0','85','2013-05-08 03:48:42','2016-08-26 00:06:20'),
+('86','81','14','Sit at tempore debitis ex sequi quis.','Possimus neque eveniet assumenda quaerat explicabo tempore maiores. Aliquam et est error veniam veniam temporibus voluptatem quo.','3','0','0','86','2019-08-12 00:41:02','2019-04-22 07:27:04'),
+('87','20','17','Aliquam vel voluptas eligendi maxime repellat qui commodi id.','Delectus voluptas aliquam inventore provident. Sequi aut officiis temporibus hic. Qui enim illum voluptas. Ducimus illo esse aut vel debitis illo.','2','0','0','157','2011-03-18 02:56:24','2011-07-26 07:59:51'),
+('88','15','19','Nostrum aut dignissimos ex et veniam mollitia.','Laudantium tempora eveniet aut iusto praesentium animi dolorem. Ipsam maiores aperiam molestiae cum omnis libero molestiae. Deserunt veritatis officiis quidem tempora repellat dolores in.','3','0','0','198','2018-02-18 09:28:22','2010-07-08 03:15:27'),
+('89','35','14','Ad doloribus dolor ut error voluptas perferendis.','Voluptate hic vel provident nulla explicabo ipsam. Cum ab et sapiente libero velit nemo debitis dolorem. Earum ex non ratione reiciendis. Sapiente est asperiores qui corrupti laudantium delectus.','1','0','0','190','2012-02-04 09:54:41','2011-08-22 01:21:45'),
+('90','19','20','Laudantium fugiat dignissimos quas quod unde aut eligendi.','Sit cumque vel ab ut facere necessitatibus. Voluptas enim doloribus repellendus sed ut non.','3','0','0','148','2017-04-16 17:04:43','2016-08-16 08:14:27'),
+('91','96','3','Delectus dolores et voluptas ut nobis voluptatem est.','Illum ratione dolor esse et voluptatem impedit dolores. Qui consequatur fugit quibusdam praesentium sit est. Quis molestias qui ducimus.','1','0','0','159','2013-10-21 20:34:09','2012-05-11 03:17:34'),
+('92','33','12','Alias aliquam praesentium officiis placeat.','Sit voluptatibus placeat accusantium quis quia quisquam. Voluptates voluptas nihil eligendi alias repudiandae nostrum veniam. Iure consequatur asperiores corporis et recusandae. Et perspiciatis voluptatibus sequi consequuntur nostrum id.','2','0','0','199','2012-03-18 08:06:16','2014-12-31 14:55:34'),
+('93','49','8','Fugit ipsum qui ducimus nisi asperiores dolor id.','Est cupiditate voluptatem sed et aut maiores. Saepe aliquam consectetur mollitia et. Aut porro quisquam quia id.','2','0','0','3','2013-07-07 20:32:59','2011-02-12 19:26:10'),
+('94','45','22','Ea voluptate modi quos.','Quia accusantium blanditiis nisi doloremque expedita rerum voluptas. Mollitia voluptatem sit mollitia et modi veritatis atque porro. Repellat assumenda et modi qui voluptatem corporis. Unde doloribus quo animi velit ut.','1','0','0','3','2013-02-10 12:53:12','2016-08-30 01:22:48'),
+('95','46','19','Nihil eos dolor molestiae esse.','Quae eos autem eligendi. Sequi iusto rem molestias sapiente ea aut. Repellat qui ullam harum et dolores. Doloremque ipsam et optio ut perspiciatis sit nam.','1','0','0','56','2015-06-20 22:37:06','2013-03-15 16:49:19'),
+('96','59','17','Optio in ipsam iure voluptas nemo.','Culpa aut dignissimos est aut voluptatem sapiente inventore similique. Soluta debitis consequatur quia. Consequatur sequi ut deleniti modi. Maxime fugit sed repudiandae consequatur.','3','0','0','87','2014-12-12 01:47:22','2017-03-31 03:44:07'),
+('97','27','2','Voluptates consectetur molestiae cum omnis neque minima consectetur.','Eius ipsam praesentium qui et quas quisquam. Qui dolorem dolores voluptatum sed natus perferendis sit corrupti. Suscipit nihil est earum veritatis dolorem minima accusantium.','2','0','0','74','2012-01-12 22:56:10','2010-12-05 03:11:44'),
+('98','92','5','Ab voluptatem ea et nesciunt eius dolor veritatis.','Quia placeat ut ipsum quis aut dolor. Quidem aspernatur excepturi aspernatur omnis ipsam excepturi. Temporibus consequatur atque voluptatem soluta. Maxime odit incidunt culpa soluta.','3','0','0','27','2016-11-29 13:24:18','2016-11-04 13:28:12'),
+('99','83','11','Esse qui eligendi maxime laboriosam velit aut.','Sit omnis qui autem aut quia tempora aut. Et et quia quo doloremque ad et. Et velit est magnam nisi.','2','0','0','160','2017-02-25 06:24:47','2013-11-18 14:27:30'),
+('100','19','25','Provident ipsum fugit molestiae.','Necessitatibus vero sint enim culpa sed perferendis aut. Totam odit et et assumenda et qui. Perferendis sed voluptate ut minus. Ducimus quos rerum adipisci rerum perferendis maiores.','1','0','0','101','2014-10-28 04:39:51','2015-03-31 08:06:45'); 
+
+-- проверка
+
+SELECT * FROM posts LIMIT 10;
+
+-- 1. Создать все необходимые внешние ключи и диаграмму отношений.
+
+SHOW TABLES;
+
+-- Смотрим структуру таблицы пользователей
+DESC users;
+-- status_id
+-- Добавим внешний ключ на столбец status_id
+
+-- Нужно поправить свойства солбца, сделать допустимым NULL значение    
+ALTER TABLE users MODIFY COLUMN status_id INT UNSIGNED;  
+
+ALTER TABLE users 
+  ADD CONSTRAINT users_status_id_fk
+  FOREIGN KEY (status_id) REFERENCES user_statuses(id)
+    ON DELETE SET NULL;
+
+-- Для таблицы профилей
+-- Смотрим структуру таблицы
+DESC profiles;
+
+-- Добавляем внешние ключи user_id, photo_id
+
+ALTER TABLE profiles
+  ADD CONSTRAINT profiles_user_id_fk 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE,
+  ADD CONSTRAINT profiles_photo_id_fk
+    FOREIGN KEY (photo_id) REFERENCES media(id)
+      ON DELETE SET NULL;
+
+-- как удалить внешний ключ  
+ALTER TABLE profiles DROP FOREIGN KEY profiles_user_id_fk;
+-- Изменяем тип столбца при необходимости
+ALTER TABLE profiles MODIFY COLUMN photo_id INT(10) UNSIGNED;
+
+DESC friendship_statuses;
+
+-- нет внешних ключей
+
+DESC friendship;
+-- user_id, friend_id, status_id
+
+ALTER TABLE friendship
+  ADD CONSTRAINT friendship_user_id_fk 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE,
+  ADD CONSTRAINT friendship_friend_id_fk
+    FOREIGN KEY (friend_id) REFERENCES users(id)
+      ON DELETE CASCADE;
+
+ALTER TABLE friendship MODIFY COLUMN status_id INT(10) UNSIGNED; 
+
+ALTER TABLE friendship ADD CONSTRAINT friendship_status_id_fk
+    FOREIGN KEY (status_id) REFERENCES friendship_statuses(id)
+      ON DELETE SET NULL;
+
+DESC user_statuses;
+-- нет внешних ключей
+
+DESC communities; 
+-- нет внешних ключей
+
+DESC communities_users;
+
+-- community_id, user_id
+
+ALTER TABLE communities_users
+  ADD CONSTRAINT communities_users_community_id_fk 
+    FOREIGN KEY (community_id) REFERENCES communities(id)
+      ON DELETE CASCADE,
+  ADD CONSTRAINT communities_users_user_id_fk
+    FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE;
+     
+DESC media_types;
+-- нет внешних ключей
+
+DESC media;
+
+-- user_id, media_type_id
+
+ALTER TABLE media MODIFY COLUMN media_type_id INT UNSIGNED; 
+
+ALTER TABLE media 
+  ADD CONSTRAINT media_user_id_fk 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE,
+  ADD CONSTRAINT media_media_type_id_fk
+    FOREIGN KEY (media_type_id) REFERENCES media_types(id)
+      ON DELETE SET NULL;
+     
+DESC messages;
+-- from_user_id, to_user_id
+
+ALTER TABLE messages 
+  ADD CONSTRAINT messages_from_user_id_fk 
+    FOREIGN KEY (from_user_id) REFERENCES users(id)
+      ON DELETE CASCADE,
+  ADD CONSTRAINT messages_to_user_id_fk
+    FOREIGN KEY (to_user_id) REFERENCES users(id)
+      ON DELETE CASCADE;
+
+
+DESC target_types;
+
+-- нет внешних ключей
+
+DESC likes;
+-- user_id, target_id, target_type_id не знаю, как поставить ключ на target_id, так он еще зависит от типа (target_type_id)
+
+ALTER TABLE likes MODIFY COLUMN user_id INT UNSIGNED; 
+ALTER TABLE likes MODIFY COLUMN target_type_id INT UNSIGNED;
+
+ALTER TABLE likes 
+  ADD CONSTRAINT likes_user_id_fk 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE SET NULL,
+  ADD CONSTRAINT likes_target_type_id_fk
+    FOREIGN KEY (target_type_id) REFERENCES target_types(id)
+      ON DELETE SET NULL;
+
+
+SHOW TABLES;
+DESC communities;
+
+DESC posts;
+
+-- user_id, community_id, media_id
+
+ALTER TABLE posts MODIFY COLUMN community_id INT UNSIGNED; 
+
+ALTER TABLE posts 
+  ADD CONSTRAINT posts_user_id_fk 
+    FOREIGN KEY (user_id) REFERENCES users(id)
+      ON DELETE CASCADE,
+  ADD CONSTRAINT posts_community_id_fk
+  	FOREIGN KEY (community_id) REFERENCES communities(id)
+      ON DELETE SET NULL,
+  ADD CONSTRAINT posts_media_id_fk
+    FOREIGN KEY (media_id) REFERENCES media(id)
+      ON DELETE SET NULL;
+
+
+-- Смотрим диаграмму отношений в DBeaver (ERDiagram)
+-- прикрепить файл
+
+
+-- Если нужно удалить
+-- ALTER TABLE table_name DROP FOREIGN KEY constraint_name;
+
+
+-- 3. Подсчитать общее количество лайков десяти самым молодым пользователям (сколько лайков получили 10 самых молодых пользователей).
+desc profiles;
+
+-- Найдём 10 самых молодых пользователей
+SELECT user_id, birthday
+  FROM profiles 
+  ORDER BY birthday DESC LIMIT 10;
+ 
+ -- теперь подсчитаем лайки сгруппировав по target_id
+ -- нужно, чтобы target_type_id был 'users' и target_id был в списке самых молодых
+ 
+ SELECT target_id, COUNT(target_id) AS total FROM likes 
+  WHERE target_type_id = (SELECT id FROM target_types WHERE name LIKE 'users')
+ GROUP BY target_id;
+
+ 
+SElECT target_id, COUNT(target_id) AS total from likes GROUP BY target_id order by target_id;
+
+-- объединяем в один запрос
+
+SELECT target_id, COUNT(target_id) AS total FROM likes 
+  WHERE (
+    target_type_id = (SELECT id FROM target_types WHERE name LIKE 'users')
+    AND 
+  target_id IN
+    (SELECT * FROM
+        (SELECT user_id FROM profiles ORDER BY birthday DESC LIMIT 10) as youngest))
+GROUP BY target_id 
+with ROLLUP;
+
+
+     
+-- 4. Определить кто больше поставил лайков (всего) - мужчины или женщины?
+
+SELECT 
+	CASE 
+	WHEN (SELECT COUNT(id) FROM likes WHERE user_id IN (SELECT user_id FROM profiles WHERE gender = 'm')) >
+(SELECT COUNT(id) FROM likes WHERE user_id IN (SELECT user_id FROM profiles WHERE gender = 'w')) THEN 'больше мужчин'
+	WHEN (SELECT COUNT(id) FROM likes WHERE user_id IN (SELECT user_id FROM profiles WHERE gender = 'm')) <
+(SELECT COUNT(id) FROM likes WHERE user_id IN (SELECT user_id FROM profiles WHERE gender = 'w')) THEN 'больше женщин'
+	ELSE 'поровну' END;
+
+
+-- 5. Найти 10 пользователей, которые проявляют наименьшую активность в использовании социальной сети
+-- (критерии активности необходимо определить самостоятельно).
+ 
+ 
+ SELECT CONCAT(first_name, ' ', last_name) AS fullname, 
+	(SELECT COUNT(*) FROM likes WHERE user_id = users.id)+ 
+	(SELECT COUNT(*) FROM posts WHERE user_id = users.id)+
+	(SELECT COUNT(*) FROM media WHERE user_id = users.id) + 
+	(SELECT COUNT(*) FROM messages WHERE from_user_id = users.id) 
+	AS total_activity FROM users
+	ORDER BY total_activity
+	LIMIT 10;
+ 
+ 
