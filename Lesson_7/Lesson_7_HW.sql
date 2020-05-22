@@ -76,8 +76,8 @@ INSERT INTO catalogs VALUES
   (NULL, 'Жесткие диски'),
   (NULL, 'Оперативная память');
  
-SELECT * FROM products JOIN catalogs ON products.catalog_id = catalogs.id;
- 
+SELECT products.id, products.name, catalogs.name AS 'type' FROM products JOIN catalogs ON products.catalog_id = catalogs.id;
+
  
 
 
