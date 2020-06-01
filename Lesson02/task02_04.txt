@@ -1,0 +1,1 @@
+mysqldump mysql help_keyword --where='TRUE limit 100' > my_keyword.sql
